@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      .card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+        max-width: 50%;
+        margin: 20px auto;
+      }
+      img {
+        width: 100%;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Katalog Karakter Disney</h1>
+    <button onclick="ambilKarakter()">Tampilkan Karakter</button>
+
+    <div id="karakterContainer"></div>
+
+    <script>
+      // async artinya fungsi ini butuh waktu (karena harus internetan ambil data)
+      async function ambilKarakter() {
+        // LANGKAH 1: Cari "kotak kosong" yang sudah kita buat di HTML tadi
+        const wadah = document.getElementById("karakterContainer");
+
+        // Sambil nunggu data datang, kita isi kotaknya dengan tulisan loading
+        wadah.innerHTML = "<p>Sedang memuat data...</p>";
+
+        try {
+          // LANGKAH 2: Tentukan alamat URL API-nya
+          const url = "https://api.disneyapi.dev/character";
+
+          // LANGKAH 3: Suruh program pergi ke URL itu (fetch).
+          // Karena butuh waktu di jalan, kita suruh dia tunggu (await).
+          const response = await fetch(url);
+
+          // Setelah datanya sampai, ubah formatnya jadi JSON agar bisa dibaca
+          const result = await response.json();
+
+          // (Opsional) Karena Disney ngasih BANYAK karakter sekaligus, kita ambil acak 1 saja
+          const daftarKarakter = result.data;
+          const karakterAcak =
+            daftarKarakter[Math.floor(Math.random() * daftarKarakter.length)];
+
+          // LANGKAH 4: Masukkan data yang didapat ke dalam "kotak kosong" tadi
+          // Kita pakai backtick (`) agar bisa menggabungkan HTML dengan data dari API
+          wadah.innerHTML = `
+            <div class="card">
+                <h2>${karakterAcak.name}</h2>
+                <img src="${karakterAcak.imageUrl}" alt="Gambar">
+            </div>
+        `;
+        } catch (error) {
+          // Kalau internet mati atau URL salah, tampilkan pesan error ini
+          wadah.innerHTML = "<p>Ups, terjadi kesalahan!</p>";
+        }
+      }
+    </script>
+  </body>
+</html>
